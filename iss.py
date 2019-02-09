@@ -1,27 +1,13 @@
-import csv
 import json
-import os
 import requests
+import sched
 import time
-from threading import Timer
 
 lat = "48.4225"
 lon = "-123.3585"
-tempfile = "predictions.csv"
 
-def alertme( jsoncontent ):
-    csvfile = open(tempfile, 'a')
-    csvwriter = csv.writer(csvfile)
-
-    if os.stat(tempfile).st_size == 0:
-        csvwriter.writerow(['RISETIMESTAMP', 'RISETIMEHUMAN', 'ALERTTIMESTAMP', 'ALERTTIMEHUMAN', 'DURATIONSECONDS'])
-
-    csvwriter.writerow([jsoncontent['response'][0]['risetime'],
-                       time.ctime(jsoncontent['response'][0]['risetime']),
-                       jsoncontent['response'][0]['risetime'] - 300,
-                       time.ctime(jsoncontent['response'][0]['risetime'] - 300)])
-
-    csvfile.close()
+def alertme(jsoncontent):
+    return time.ctime(jsoncontent['response'][0]['risetime'] - 300)
 
 def main():
     #http://api.open-notify.org/iss-pass.json?lat=LAT&lon=LON
@@ -29,7 +15,7 @@ def main():
 
     jsoncontent = content.json()
 
-    alertme( jsoncontent )
+    print(alertme(jsoncontent))
 
 if __name__ == "__main__":
     main()
