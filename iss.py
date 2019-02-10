@@ -18,25 +18,37 @@ def doalert(duration):
 
     time.sleep(duration)
 
+    # end alert
     print("Goodbye ISS")
 
 def getnextalert():
-    "Return the number of seconds until the next flyover"
-    content = requests.get("http://api.open-notify.org/iss-pass.json?lat=" + lat + "&lon=" + lon + "&alt=" + alt + "&n=1")
+    "Return the number of seconds until and duration of the next flyover"
+    content = requests.get("http://api.open-notify.org/iss-pass.json?n=1" +
+            "&lat=" + lat +
+            "&lon=" + lon +
+            "&alt=" + alt)
     jsoncontent = content.json()
-    return (int(jsoncontent['response'][0]['risetime'] - time.time()),
-            int(jsoncontent['response'][0]['duration']))
+    # Print content of json download
+    # print(jsoncontent)
+
+    risetime = jsoncontent['response'][0]['risetime']
+    duration = jsoncontent['response'][0]['duration']
+    # Print next rise and duration in human readable form
+    print("risetime: " + time.ctime(risetime))
+    print("duration: " + str(duration) + " seconds")
+
+    return (int(risetime - time.time()), duration)
 
 def addsked(nextalert, duration):
     "Schedule next alert"
     sked.enter(nextalert, 1, doalert, {duration})
+    # Print queue of scheduled tasks
+    # print(sked.queue)
     sked.run()
 
 def main():
     # Need to loop
     alerttime, alertduration = getnextalert()
-    print(alerttime)
-    print(alertduration)
     addsked(alerttime, alertduration)
 
 if __name__ == "__main__":
