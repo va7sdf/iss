@@ -23,13 +23,14 @@ def doalert(duration):
 
 def getnextalert():
     "Return the number of seconds until and duration of the next flyover"
-    content = requests.get("http://api.open-notify.org/iss-pass.json?n=1" +
-            "&lat=" + lat +
-            "&lon=" + lon +
-            "&alt=" + alt)
+    url = 'http://api.open-notify.org/iss-pass.json'
+    querystring = {'lat':lat, 'lon':lon, 'alt':alt, 'n':'1'}
+    content = requests.get(url, querystring)
+    # Print response headers
+    #print(content.headers)
     jsoncontent = content.json()
     # Print content of json download
-    # print(jsoncontent)
+    #print(jsoncontent)
 
     risetime = jsoncontent['response'][0]['risetime']
     duration = jsoncontent['response'][0]['duration']
@@ -48,8 +49,9 @@ def addsked(nextalert, duration):
 
 def main():
     # Need to loop
-    alerttime, alertduration = getnextalert()
-    addsked(alerttime, alertduration)
+    while True:
+        alerttime, alertduration = getnextalert()
+        addsked(alerttime, alertduration)
 
 if __name__ == "__main__":
     main()
