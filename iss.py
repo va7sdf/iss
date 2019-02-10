@@ -3,30 +3,35 @@ import requests
 import sched
 import time
 
+# location variables
 lat = "48.4225"
 lon = "-123.3585"
+
+# seconds for early warning
+earlywarn = 300
+
+# initialize scheduler
 sked = sched.scheduler(time.time, time.sleep)
 
-def foo():
+def doalert():
     print("Hello ISS")
 
-def getnextalert(jsoncontent):
-    return int(jsoncontent['response'][0]['risetime'] - 800 - time.time())
+def getnextalert():
+    "Return the number of seconds until the next flyover"
+    content = requests.get("http://api.open-notify.org/iss-pass.json?lat=" + lat + "&lon=" + lon)
+    jsoncontent = content.json()
+    return int(jsoncontent['response'][0]['risetime'] - earlywarn - time.time())
 
 def addsked(nextalert):
+    "Schedule next alert"
     print(nextalert)
-    sked.enter(nextalert, 1, foo)
+    sked.enter(nextalert, 1, doalert)
     sked.run()
-    # Call function to perform alert operation
 
 def main():
     # Need to loop
-
-    #http://api.open-notify.org/iss-pass.json?lat=LAT&lon=LON
-    content = requests.get("http://api.open-notify.org/iss-pass.json?lat=" + lat + "&lon=" + lon)
-    jsoncontent = content.json()
-    print(jsoncontent)
-    addsked(getnextalert(jsoncontent))
+    seconds = getnextalert()
+    addsked(seconds)
 
 if __name__ == "__main__":
     main()
