@@ -32,6 +32,10 @@ def getnextalert():
     # Print content of json download
     #print(jsoncontent)
 
+    # Print server and local times
+    print("Server time: " + time.ctime(jsoncontent['request']['datetime']))
+    print("Local time:  " + time.ctime())
+
     risetime = jsoncontent['response'][0]['risetime']
     duration = jsoncontent['response'][0]['duration']
     # Print next rise and duration in human readable form
