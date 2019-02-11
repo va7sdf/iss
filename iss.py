@@ -1,6 +1,8 @@
 import json
 import requests
 import sched
+import signal
+import sys
 import time
 
 # location variables
@@ -10,6 +12,9 @@ alt = "8"
 
 # initialize scheduler
 sked = sched.scheduler(time.time, time.sleep)
+
+def signal_handler(sig, frame):
+    sys.exit(0)
 
 def doalert(duration):
     "Perform alert"
@@ -49,6 +54,7 @@ def alerts():
     sked.run()
 
 def main():
+    signal.signal(signal.SIGINT, signal_handler)
     while True:
         alerts()
 
