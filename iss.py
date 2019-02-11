@@ -42,12 +42,20 @@ def alerts():
 
     for x in range(0, 5):
         risetime = jsoncontent['response'][x]['risetime']
+        nextalert = int(risetime - time.time())
         duration = jsoncontent['response'][x]['duration']
         # Print next rise and duration in human readable form
-        print("risetime: " + time.ctime(risetime))
-        print("duration: " + str(duration) + " seconds")
+        print("risetime:  " + time.ctime(risetime))
+        print("nextalert: " + str(nextalert) + " seconds")
+        print("duration:  " + str(duration) + " seconds")
 
-        sked.enter(int(risetime - time.time()), 1, doalert, {duration})
+        # Modify duration if ISS already overhead
+        # (With ISS overhead, nextalert will be negative and adding it
+        # to duration will give the remaining time)
+        if nextalert < 0:
+            duration = duration + nextalert
+
+        sked.enter(nextalert, 1, doalert, {duration})
 
     # Print queue of scheduled tasks
     print(sked.queue)
