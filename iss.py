@@ -48,7 +48,6 @@ def addsked(nextalert, duration):
     sked.run()
 
 def main():
-    # Need to loop
     while True:
         alerttime, alertduration = getnextalert()
         addsked(alerttime, alertduration)
