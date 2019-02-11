@@ -14,6 +14,7 @@ alt = "8"
 sked = sched.scheduler(time.time, time.sleep)
 
 def signal_handler(sig, frame):
+    "Handle CTRL-C and exit gracefully"
     sys.exit(0)
 
 def doalert(duration):
