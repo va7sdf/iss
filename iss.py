@@ -40,10 +40,10 @@ def alerts():
     # Print content of json download
     print(jsoncontent)
 
-    for x in range(0, len(jsoncontent['response'])):
-        risetime = jsoncontent['response'][x]['risetime']
+    for response in jsoncontent['response']:
+        risetime = response['risetime']
         nextalert = int(risetime - time.time())
-        duration = jsoncontent['response'][x]['duration']
+        duration = response['duration']
         # Print next rise and duration in human readable form
         print("risetime:  " + time.ctime(risetime))
         print("nextalert: " + str(nextalert) + " seconds")
