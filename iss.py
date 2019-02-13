@@ -32,7 +32,7 @@ def alerts():
     "Parse JSON file and schedule next five alerts"
 
     url = 'http://api.open-notify.org/iss-pass.json'
-    querystring = {'lat':lat, 'lon':lon, 'alt':alt}
+    querystring = {'lat':lat, 'lon':lon, 'alt':alt, 'n':5}
     content = requests.get(url, querystring)
     # Print response headers
     print(content.headers)
@@ -40,7 +40,7 @@ def alerts():
     # Print content of json download
     print(jsoncontent)
 
-    for x in range(0, 4):
+    for x in range(0, len(jsoncontent['response'])):
         risetime = jsoncontent['response'][x]['risetime']
         nextalert = int(risetime - time.time())
         duration = jsoncontent['response'][x]['duration']
