@@ -34,33 +34,40 @@ def alerts():
     url = 'http://api.open-notify.org/iss-pass.json'
     querystring = {'lat':lat, 'lon':lon, 'alt':alt, 'n':5}
     content = requests.get(url, querystring)
-    # Print response headers
-    print(content.headers)
-    jsoncontent = content.json()
-    # Print content of json download
-    print(jsoncontent)
 
-    for response in jsoncontent['response']:
-        risetime = response['risetime']
-        nextalert = int(risetime - time.time())
-        duration = response['duration']
-        # Print next rise and duration in human readable form
-        print("risetime:  " + time.ctime(risetime))
-        print("nextalert: " + str(nextalert) + " seconds")
-        print("duration:  " + str(duration) + " seconds")
+    if content.status_code == requests.codes.ok:
+        # Print response headers
+        print(content.headers)
+        jsoncontent = content.json()
+        # Print content of json download
+        print(jsoncontent)
 
-        # Modify duration if ISS already overhead
-        # (With ISS overhead, nextalert will be negative and adding it
-        # to duration will give the remaining time)
-        if nextalert < 0:
-            duration = duration + nextalert
+        for response in jsoncontent['response']:
+            risetime = response['risetime']
+            nextalert = int(risetime - time.time())
+            duration = response['duration']
+            # Print next rise and duration in human readable form
+            print("risetime:  " + time.ctime(risetime))
+            print("nextalert: " + str(nextalert) + " seconds")
+            print("duration:  " + str(duration) + " seconds")
 
-        sked.enter(nextalert, 1, doalert, {duration})
+            # Modify duration if ISS already overhead
+            # (With ISS overhead, nextalert will be negative and adding it
+            # to duration will give the remaining time)
+            if nextalert < 0:
+                duration = duration + nextalert
 
-    # Print queue of scheduled tasks
-    print(sked.queue)
+            sked.enter(nextalert, 1, doalert, {duration})
 
-    sked.run()
+        # Print queue of scheduled tasks
+        print(sked.queue)
+
+        sked.run()
+    else:
+        print("Error retrieving JSON")
+
+        # Wait five minutes before exiting function
+        time.sleep(300)
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
