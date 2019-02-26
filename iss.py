@@ -21,12 +21,12 @@ def doalert(duration):
     "Perform alert"
 
     # start alert
-    print("Hello ISS")
+    print("Hello ISS   " + time.ctime(time.time()))
 
     time.sleep(duration)
 
     # end alert
-    print("Goodbye ISS")
+    print("Goodbye ISS " + time.ctime(time.time()))
 
 def alerts():
     "Parse JSON file and schedule next five alerts"
